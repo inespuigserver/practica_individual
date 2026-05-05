@@ -35,6 +35,11 @@ else:
     "Lucia": "Está organizando una fiesta exclusiva pero no todo el mundo está invitado",
     "Sofia": "Ha empezado a hablar con alguien del grupo en secreto y ya hay teorías"
 }
+    # obtener y mostrar el rumor
+    mensaje = rumores.get(persona_inicial, "Tiene algo interesante que contar")
+
+    print(f"{persona_inicial} dice: '{mensaje}'")
+
     #función para simular la propagación del rumor
  
 

@@ -20,7 +20,7 @@ red_social = {
     "Sofia": ["Lucia"]
 }
 #pedir persona que inicia el rumor
-persona_inicial = input("Ingrese el nombre de la persona que inicia el rumor: ")
+persona_inicial = input("Ingrese el nombre de la persona que inicia el rumor: ").lower().capitalize()
 if persona_inicial not in red_social:
     print("Error: la persona no existe en la red social.")
 else:
@@ -70,6 +70,45 @@ else:
 
 
     orden, niveles, tiempo, informados = propagacion_bfs(red_social, persona_inicial)
+
+    # representar el rumor en un grafo dividido por niveles
+    G = nx.Graph()
+
+    for persona, amigos in red_social.items():
+        for amigo in amigos:
+            G.add_edge(persona, amigo)
+
+    pos = {}
+
+    for persona, nivel in niveles.items():
+        personas_mismo_nivel = [p for p in niveles if niveles[p] == nivel]
+        posicion = personas_mismo_nivel.index(persona)
+
+        pos[persona] = (posicion, -nivel)
+
+    plt.figure(figsize=(10, 6))
+
+    nx.draw(
+        G,
+        pos,
+        with_labels=True,
+        node_size=2000,
+        node_color="lightblue",
+        font_size=10,
+        font_weight="bold",
+        edge_color="gray"
+    )
+
+    nx.draw_networkx_nodes(
+        G,
+        pos,
+        nodelist=[persona_inicial],
+        node_color="orange",
+        node_size=2500
+    )
+
+    plt.title("Propagación del rumor por niveles")
+    plt.show()
 
     print("\n--- SIMULACIÓN DE PROPAGACIÓN DEL RUMOR ---")
     print("Persona inicial:", persona_inicial)

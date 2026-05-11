@@ -41,8 +41,6 @@ else:
     print(f"{persona_inicial} dice: '{mensaje}'")
 
     #función para simular la propagación del rumor
- 
-
     def propagacion_bfs(red_social, persona_inicial):
         inicio_tiempo = time.time()
 

@@ -119,6 +119,15 @@ def convertir_tiempo(minutos):
 def propagacion_bfs(red_social, persona_inicial):
     inicio_real = time.time()
 
+    tipos_usuario = {
+        "Ana": "rapido", "Luis": "rapido", "Carlos": "normal",
+        "Marta": "normal", "Elena": "lento", "Pedro": "lento",
+        "Lucia": "rapido", "Sofia": "normal", "Julia": "rapido",
+        "Raul": "normal", "Diego": "lento", "Nora": "normal",
+        "Sara": "rapido", "Hugo": "lento", "Mario": "normal",
+        "Claudia": "no_comparte", "Adrian": "lento", "Valeria": "rapido"
+    }
+
     cola = deque()
     visitados = set()
     orden_propagacion = []
@@ -135,73 +144,169 @@ def propagacion_bfs(red_social, persona_inicial):
         persona = cola.popleft()
         orden_propagacion.append(persona)
 
+        if tipos_usuario[persona] == "no_comparte":
+            continue
+
         for vecino in red_social[persona]:
             if vecino not in visitados:
                 visitados.add(vecino)
                 cola.append(vecino)
 
                 niveles[vecino] = niveles[persona] + 1
+
+                tipo = tipos_usuario[persona]
+
+                if tipo == "rapido":
+                    retraso_base = random.randint(5, 60)
+                elif tipo == "normal":
+                    retraso_base = random.randint(60, 360)
+                elif tipo == "lento":
+                    retraso_base = random.randint(360, 1440)
+                else:
+                    retraso_base = random.randint(1440, 2880)
+
                 nivel_vecino = niveles[vecino]
 
-                if nivel_vecino == 1:
-                    retraso = random.randint(5, 30)
-                elif nivel_vecino == 2:
-                    retraso = random.randint(30, 180)
-                elif nivel_vecino == 3:
-                    retraso = random.randint(180, 720)
-                else:
-                    retraso = random.randint(720, 2880)
+                retraso_por_nivel = nivel_vecino * random.randint(30, 180)
 
-                tiempos_llegada[vecino] = tiempos_llegada[persona] + retraso
+                retraso_total = retraso_base + retraso_por_nivel
+
+                tiempos_llegada[vecino] = tiempos_llegada[persona] + retraso_total
 
     fin_real = time.time()
     tiempo_ejecucion = fin_real - inicio_real
     tiempo_total_simulado = max(tiempos_llegada.values())
 
     return orden_propagacion, niveles, tiempos_llegada, tiempo_total_simulado, tiempo_ejecucion, visitados
-
-
 persona_inicial = None
 
 
 def elegir_persona_graficamente():
+
     global persona_inicial
 
-    fig, ax = plt.subplots(figsize=(12, 8))
-    ax.set_title("Elige la persona que inicia el rumor", fontsize=16, fontweight="bold")
+    fig = plt.figure(figsize=(13, 8))
+
+    # color de fondo tipo red social
+    fig.patch.set_facecolor("#f0f2f5")
+
+    ax = plt.axes([0, 0, 1, 1])
+
+    ax.set_facecolor("#f0f2f5")
+
     ax.axis("off")
+
+    # -----------------------------
+    # TÍTULO ESTILO RED SOCIAL
+    # -----------------------------
+
+    plt.text(
+        0.5,
+        0.93,
+        "LinkUp",
+        fontsize=30,
+        fontweight="bold",
+        color="#1877f2",
+        ha="center"
+    )
+
+    plt.text(
+        0.5,
+        0.88,
+        "¿Quién inicia el rumor?",
+        fontsize=18,
+        fontweight="bold",
+        color="black",
+        ha="center"
+    )
+
+    plt.text(
+        0.5,
+        0.84,
+        "Selecciona un perfil de la red social",
+        fontsize=11,
+        color="gray",
+        ha="center"
+    )
 
     botones = []
 
+    # -----------------------------
+    # DISTRIBUCIÓN DE PERFILES
+    # -----------------------------
+
     columnas = 3
+
     ancho = 0.22
-    alto = 0.08
-    espacio_x = 0.27
+    alto = 0.09
+
+    espacio_x = 0.26
     espacio_y = 0.11
 
     x_inicial = 0.12
-    y_inicial = 0.78
+    y_inicial = 0.70
+
+    # -----------------------------
+    # FUNCIÓN SELECCIÓN
+    # -----------------------------
 
     def seleccionar(nombre):
+
         def funcion(event):
+
             global persona_inicial
+
             persona_inicial = nombre
+
             plt.close(fig)
+
         return funcion
 
+    # -----------------------------
+    # CREAR BOTONES
+    # -----------------------------
+
     for i, persona in enumerate(personas):
+
         fila = i // columnas
+
         columna = i % columnas
 
         x = x_inicial + columna * espacio_x
+
         y = y_inicial - fila * espacio_y
 
+        # fondo tipo tarjeta
+        tarjeta = plt.Rectangle(
+            (x - 0.01, y - 0.01),
+            ancho + 0.02,
+            alto + 0.02,
+            facecolor="white",
+            edgecolor="#d3d6db",
+            linewidth=1.5,
+            zorder=0
+        )
+
+        ax.add_patch(tarjeta)
+
         ax_boton = plt.axes([x, y, ancho, alto])
-        boton = Button(ax_boton, persona)
+
+        boton = Button(ax_boton, f"👤  {persona}")
+
+        # colores tipo app
+        boton.color = "#ffffff"
+        boton.hovercolor = "#dbe7ff"
+
+        boton.label.set_fontsize(11)
+        boton.label.set_fontweight("bold")
+        boton.label.set_color("#1c1e21")
+
         boton.on_clicked(seleccionar(persona))
+
         botones.append(boton)
 
     fig.botones = botones
+
     plt.show()
 
 

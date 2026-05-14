@@ -35,74 +35,51 @@ rumores = {
 }
 
 
-def crear_red_social_aleatoria(personas):
+def crear_red_social(personas):
 
-    red_social = {}
+    red_social = {
 
-    for persona in personas:
-        red_social[persona] = []
-
-    # red base: casi todos conectados, pero no todos
-    relaciones_posibles = {
         "Ana": ["Luis", "Carlos", "Julia", "Marta"],
-        "Luis": ["Ana", "Marta", "Raul", "Carlos", "Elena"],
+
+        "Luis": ["Ana", "Marta", "Raul", "Carlos"],
+
         "Carlos": ["Ana", "Luis", "Lucia", "Diego", "Raul"],
+
         "Marta": ["Ana", "Luis", "Elena", "Sara", "Julia"],
-        "Elena": ["Marta", "Pedro", "Sofia", "Sara", "Luis"],
-        "Pedro": ["Elena", "Hugo", "Marta", "Sara"],
-        "Lucia": ["Carlos", "Sofia", "Nora", "Mario", "Diego"],
+
+        "Elena": ["Marta", "Pedro", "Sofia", "Sara"],
+
+        "Pedro": ["Elena", "Hugo", "Sara"],
+
+        "Lucia": ["Carlos", "Sofia", "Nora", "Mario"],
+
         "Sofia": ["Lucia", "Elena", "Diego", "Mario", "Nora"],
-        "Julia": ["Ana", "Raul", "Diego", "Valeria", "Marta"],
+
+        "Julia": ["Ana", "Raul", "Marta"],
+
         "Raul": ["Luis", "Carlos", "Julia", "Diego"],
-        "Diego": ["Carlos", "Raul", "Sofia", "Julia", "Nora"],
-        "Nora": ["Lucia", "Diego", "Valeria", "Sofia"],
+
+        "Diego": ["Carlos", "Raul", "Sofia", "Nora"],
+
+        "Nora": ["Lucia", "Diego", "Sofia"],
+
         "Sara": ["Marta", "Elena", "Hugo", "Pedro"],
-        "Hugo": ["Pedro", "Sara", "Claudia"],
-        "Mario": ["Lucia", "Sofia", "Valeria"],
-        "Claudia": ["Hugo", "Adrian", "Valeria"],
-        "Adrian": ["Claudia", "Valeria", "Hugo"],
-        "Valeria": ["Adrian", "Claudia", "Julia", "Nora", "Mario"]
+
+        "Hugo": ["Pedro", "Sara"],
+
+        "Mario": ["Lucia", "Sofia"],
+
+        # grupo separado
+        "Claudia": ["Adrian", "Valeria"],
+
+        "Adrian": ["Claudia", "Valeria"],
+
+        "Valeria": ["Claudia", "Adrian"]
     }
-
-    for persona in relaciones_posibles:
-
-        amigos_posibles = relaciones_posibles[persona]
-
-        numero_amigos = random.randint(2, min(4, len(amigos_posibles)))
-
-        amigos = random.sample(amigos_posibles, numero_amigos)
-
-        for amigo in amigos:
-
-            if amigo not in red_social[persona]:
-                red_social[persona].append(amigo)
-
-            if persona not in red_social[amigo]:
-                red_social[amigo].append(persona)
-
-    # se eligen 2 o 3 personas que no se enterarán
-    posibles_no_informados = personas.copy()
-
-    if persona_inicial in posibles_no_informados:
-        posibles_no_informados.remove(persona_inicial)
-
-    numero_no_informados = random.randint(2, 3)
-
-    personas_fuera = random.sample(posibles_no_informados, numero_no_informados)
-
-    # se desconectan esas personas del resto
-    for persona_fuera in personas_fuera:
-
-        red_social[persona_fuera] = []
-
-        for persona in red_social:
-
-            if persona_fuera in red_social[persona]:
-                red_social[persona].remove(persona_fuera)
 
     return red_social
 
-
+#tiempo de propagación
 def convertir_tiempo(minutos):
     if minutos < 60:
         return str(minutos) + " min"
@@ -181,32 +158,28 @@ def propagacion_bfs(red_social, persona_inicial):
 persona_inicial = None
 
 
-def elegir_persona_graficamente():
+def elegir_persona_inicial():
 
     global persona_inicial
 
     fig = plt.figure(figsize=(13, 8))
 
     # color de fondo tipo red social
-    fig.patch.set_facecolor("#f0f2f5")
+    fig.patch.set_facecolor("lightblue")
 
     ax = plt.axes([0, 0, 1, 1])
 
-    ax.set_facecolor("#f0f2f5")
+    ax.set_facecolor("lightblue")
 
     ax.axis("off")
-
-    # -----------------------------
-    # TÍTULO ESTILO RED SOCIAL
-    # -----------------------------
-
+#TÍTULO
     plt.text(
         0.5,
         0.93,
         "LinkUp",
         fontsize=30,
         fontweight="bold",
-        color="#1877f2",
+        color="darkblue",
         ha="center"
     )
 
@@ -216,7 +189,7 @@ def elegir_persona_graficamente():
         "¿Quién inicia el rumor?",
         fontsize=18,
         fontweight="bold",
-        color="black",
+        color="darkblue",
         ha="center"
     )
 
@@ -225,15 +198,13 @@ def elegir_persona_graficamente():
         0.84,
         "Selecciona un perfil de la red social",
         fontsize=11,
-        color="gray",
+        color="darkblue",
         ha="center"
     )
 
     botones = []
 
-    # -----------------------------
-    # DISTRIBUCIÓN DE PERFILES
-    # -----------------------------
+    #distribución de perfiles
 
     columnas = 3
 
@@ -246,10 +217,7 @@ def elegir_persona_graficamente():
     x_inicial = 0.12
     y_inicial = 0.70
 
-    # -----------------------------
-    # FUNCIÓN SELECCIÓN
-    # -----------------------------
-
+    #selección persona inicial
     def seleccionar(nombre):
 
         def funcion(event):
@@ -262,9 +230,7 @@ def elegir_persona_graficamente():
 
         return funcion
 
-    # -----------------------------
-    # CREAR BOTONES
-    # -----------------------------
+    #botones red social
 
     for i, persona in enumerate(personas):
 
@@ -282,7 +248,7 @@ def elegir_persona_graficamente():
             ancho + 0.02,
             alto + 0.02,
             facecolor="white",
-            edgecolor="#d3d6db",
+            edgecolor="darkblue",
             linewidth=1.5,
             zorder=0
         )
@@ -291,15 +257,15 @@ def elegir_persona_graficamente():
 
         ax_boton = plt.axes([x, y, ancho, alto])
 
-        boton = Button(ax_boton, f"👤  {persona}")
+        boton = Button(ax_boton, f"{persona}")
 
         # colores tipo app
-        boton.color = "#ffffff"
-        boton.hovercolor = "#dbe7ff"
+        boton.color = "lightcoral"
+        boton.hovercolor = "lightpink"
 
         boton.label.set_fontsize(11)
         boton.label.set_fontweight("bold")
-        boton.label.set_color("#1c1e21")
+        boton.label.set_color("darkblue")
 
         boton.on_clicked(seleccionar(persona))
 
@@ -327,7 +293,7 @@ def preparar_simulacion():
     global red_social, G, niveles, tiempos_llegada
     global informados, no_informados, pos, max_nivel
 
-    red_social = crear_red_social_aleatoria(personas)
+    red_social = crear_red_social(personas)
 
     orden, niveles, tiempos_llegada, tiempo_total, tiempo_ejecucion, informados = propagacion_bfs(
         red_social,
@@ -376,9 +342,7 @@ def preparar_simulacion():
         y = -(max_nivel + 2) * separacion_vertical
         pos[persona] = (x, y)
 
-    print("\n------------------------------------")
-    print("SIMULACIÓN PREPARADA")
-    print("------------------------------------")
+    print("SIMULACIÓN DE PROPAGACIÓN DE RUMOR")
     print("Persona inicial:", persona_inicial)
     print("Rumor:", rumores[persona_inicial])
 
@@ -386,9 +350,9 @@ def preparar_simulacion():
     for persona in niveles:
         print(
             persona,
-            "-> nivel",
+            "- nivel",
             niveles[persona],
-            "-> llega en",
+            "- llega en",
             convertir_tiempo(tiempos_llegada[persona])
         )
 
@@ -531,7 +495,7 @@ def dibujar_hasta_nivel(nivel_mostrado):
     if nivel_mostrado <= max_nivel:
         texto_boton = "Siguiente nivel"
     else:
-        texto_boton = "Fin"
+        texto_boton = "Fin de la propagación"
 
     global boton_siguiente
     boton_siguiente = Button(ax_boton, texto_boton)
@@ -551,7 +515,7 @@ def siguiente_nivel(event):
 
 
 #simulación
-elegir_persona_graficamente()
+elegir_persona_inicial()
 
 preparar_simulacion()
 

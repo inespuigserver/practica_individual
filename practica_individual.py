@@ -1,5 +1,3 @@
-# objetivo: simular la propagación de un rumor paso a paso
-
 import time
 import random
 import networkx as nx
@@ -38,25 +36,69 @@ rumores = {
 
 
 def crear_red_social_aleatoria(personas):
+
     red_social = {}
 
     for persona in personas:
         red_social[persona] = []
 
-    for persona in personas:
-        numero_amigos = random.randint(1, 4)
+    # red base: casi todos conectados, pero no todos
+    relaciones_posibles = {
+        "Ana": ["Luis", "Carlos", "Julia", "Marta"],
+        "Luis": ["Ana", "Marta", "Raul", "Carlos", "Elena"],
+        "Carlos": ["Ana", "Luis", "Lucia", "Diego", "Raul"],
+        "Marta": ["Ana", "Luis", "Elena", "Sara", "Julia"],
+        "Elena": ["Marta", "Pedro", "Sofia", "Sara", "Luis"],
+        "Pedro": ["Elena", "Hugo", "Marta", "Sara"],
+        "Lucia": ["Carlos", "Sofia", "Nora", "Mario", "Diego"],
+        "Sofia": ["Lucia", "Elena", "Diego", "Mario", "Nora"],
+        "Julia": ["Ana", "Raul", "Diego", "Valeria", "Marta"],
+        "Raul": ["Luis", "Carlos", "Julia", "Diego"],
+        "Diego": ["Carlos", "Raul", "Sofia", "Julia", "Nora"],
+        "Nora": ["Lucia", "Diego", "Valeria", "Sofia"],
+        "Sara": ["Marta", "Elena", "Hugo", "Pedro"],
+        "Hugo": ["Pedro", "Sara", "Claudia"],
+        "Mario": ["Lucia", "Sofia", "Valeria"],
+        "Claudia": ["Hugo", "Adrian", "Valeria"],
+        "Adrian": ["Claudia", "Valeria", "Hugo"],
+        "Valeria": ["Adrian", "Claudia", "Julia", "Nora", "Mario"]
+    }
 
-        posibles_amigos = personas.copy()
-        posibles_amigos.remove(persona)
+    for persona in relaciones_posibles:
 
-        amigos = random.sample(posibles_amigos, numero_amigos)
+        amigos_posibles = relaciones_posibles[persona]
+
+        numero_amigos = random.randint(2, min(4, len(amigos_posibles)))
+
+        amigos = random.sample(amigos_posibles, numero_amigos)
 
         for amigo in amigos:
+
             if amigo not in red_social[persona]:
                 red_social[persona].append(amigo)
 
             if persona not in red_social[amigo]:
                 red_social[amigo].append(persona)
+
+    # se eligen 2 o 3 personas que no se enterarán
+    posibles_no_informados = personas.copy()
+
+    if persona_inicial in posibles_no_informados:
+        posibles_no_informados.remove(persona_inicial)
+
+    numero_no_informados = random.randint(2, 3)
+
+    personas_fuera = random.sample(posibles_no_informados, numero_no_informados)
+
+    # se desconectan esas personas del resto
+    for persona_fuera in personas_fuera:
+
+        red_social[persona_fuera] = []
+
+        for persona in red_social:
+
+            if persona_fuera in red_social[persona]:
+                red_social[persona].remove(persona_fuera)
 
     return red_social
 
@@ -361,7 +403,7 @@ def dibujar_hasta_nivel(nivel_mostrado):
         texto_nivel = "Simulación completa"
 
     plt.title(
-        f"Propagación del rumor paso a paso\n"
+        f"Propagación del rumor\n"
         f"Inicio: {persona_inicial} | {texto_nivel}",
         fontsize=15,
         fontweight="bold"
@@ -403,10 +445,7 @@ def siguiente_nivel(event):
         dibujar_hasta_nivel(nivel_actual)
 
 
-# -----------------------------------
-# EJECUCIÓN DEL PROGRAMA
-# -----------------------------------
-
+#simulación
 elegir_persona_graficamente()
 
 preparar_simulacion()

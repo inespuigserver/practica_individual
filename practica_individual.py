@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
 from matplotlib.patches import Patch
 from collections import deque
+random.seed(7)
 
 
 personas = [
@@ -478,13 +479,49 @@ def dibujar_hasta_nivel(nivel_mostrado):
         fontweight="bold"
     )
 
+        # resumen final
+    if nivel_mostrado > max_nivel:
+
+        plt.figtext(
+            0.5,
+            0.11,
+            f"Personas informadas: {len(informados)} | Personas no informadas: {len(no_informados)}",
+            ha="center",
+            fontsize=11,
+            fontweight="bold",
+            bbox=dict(
+                facecolor="white",
+                edgecolor="darkblue",
+                boxstyle="round,pad=0.5"
+            )
+        )
+
+    # tipos de usuario
     plt.figtext(
         0.5,
-        0.02,
+        0.06,
+        "Tipos de usuario: rápido, normal, lento y no comparte",
+        ha="center",
+        fontsize=9,
+        bbox=dict(
+            facecolor="white",
+            edgecolor="gray",
+            boxstyle="round,pad=0.4"
+        )
+    )
+
+    # rumor
+    plt.figtext(
+        0.5,
+        0.015,
         f"Rumor: {rumores[persona_inicial]}",
         ha="center",
         fontsize=10,
-        bbox=dict(facecolor="white", edgecolor="black", boxstyle="round,pad=0.5")
+        bbox=dict(
+            facecolor="white",
+            edgecolor="black",
+            boxstyle="round,pad=0.5"
+        )
     )
 
     plt.xlim(min_x - 5, max_x + 5)
@@ -497,9 +534,35 @@ def dibujar_hasta_nivel(nivel_mostrado):
     else:
         texto_boton = "Fin de la propagación"
 
-    global boton_siguiente
     boton_siguiente = Button(ax_boton, texto_boton)
     boton_siguiente.on_clicked(siguiente_nivel)
+
+    plt.gcf().boton_siguiente = boton_siguiente
+
+    plt.draw()
+
+    plt.xlim(min_x - 5, max_x + 5)
+    plt.axis("off")
+
+    ax_boton = plt.axes([0.78, 0.90, 0.18, 0.06])
+
+    if nivel_mostrado <= max_nivel:
+        texto_boton = "Siguiente nivel"
+    if nivel_mostrado > max_nivel:
+        plt.figtext(
+        0.5,
+        0.11,
+        f"Personas informadas: {len(informados)} | Personas no informadas: {len(no_informados)}",
+        ha="center",
+        fontsize=11,
+        fontweight="bold",
+        bbox=dict(facecolor="white", edgecolor="darkblue", boxstyle="round,pad=0.5")
+    )
+
+    boton_siguiente = Button(ax_boton, texto_boton)
+    boton_siguiente.on_clicked(siguiente_nivel)
+
+
 
     plt.gcf().boton_siguiente = boton_siguiente
 
